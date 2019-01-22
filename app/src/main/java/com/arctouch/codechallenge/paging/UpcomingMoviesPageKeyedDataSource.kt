@@ -85,7 +85,8 @@ class UpcomingMoviesPageKeyedDataSource(var resourceLiveDataSource: MutableLiveD
                 DEFAULT_REGION
         ).enqueue(object : Callback<UpcomingMoviesResponse> {
             override fun onFailure(call: Call<UpcomingMoviesResponse>, t: Throwable) {
-                //mUpcomingMovies.postValue(Resource.error(t.localizedMessage, null))
+                resourceLiveDataSource.postValue(Resource.error(t.localizedMessage))
+                callback.onResult(mutableListOf(), page + 1)
             }
 
             override fun onResponse(call: Call<UpcomingMoviesResponse>, response: Response<UpcomingMoviesResponse>) {
@@ -97,18 +98,22 @@ class UpcomingMoviesPageKeyedDataSource(var resourceLiveDataSource: MutableLiveD
                             movie.copy(genres = Cache.genres.filter { movie.genreIds?.contains(it.id) == true })
                         }
 
+                        resourceLiveDataSource.postValue(Resource.success())
                         callback.onResult(moviesWithGenres, page + 1)
                     } ?: run {
-                        //TODO LISTA NULL
+                        resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
+                        callback.onResult(mutableListOf(), page + 1)
                     }
                 } else {
-//                    val error = ErrorUtils.parseError(response)
-//
-//                    error?.message?.let {  message ->
-//                        mUpcomingMovies.value = Resource.error(message, null)
-//                    } ?: run {
-//                        mUpcomingMovies.value = Resource.error(ERROR_DEFAULT, null)
-//                    }
+                    val error = ErrorUtils.parseError(response)
+
+                    error?.message?.let {  message ->
+                        resourceLiveDataSource.postValue(Resource.error(message))
+                    } ?: run {
+                        resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
+                    }
+
+                    callback.onResult(mutableListOf(), page + 1)
                 }
             }
         })
@@ -124,7 +129,8 @@ class UpcomingMoviesPageKeyedDataSource(var resourceLiveDataSource: MutableLiveD
                 DEFAULT_REGION
         ).enqueue(object : Callback<UpcomingMoviesResponse> {
             override fun onFailure(call: Call<UpcomingMoviesResponse>, t: Throwable) {
-                //mUpcomingMovies.postValue(Resource.error(t.localizedMessage, null))
+                resourceLiveDataSource.postValue(Resource.error(t.localizedMessage))
+                callback.onResult(mutableListOf(), page - 1)
             }
 
             override fun onResponse(call: Call<UpcomingMoviesResponse>, response: Response<UpcomingMoviesResponse>) {
@@ -135,18 +141,23 @@ class UpcomingMoviesPageKeyedDataSource(var resourceLiveDataSource: MutableLiveD
                         val moviesWithGenres = movies.map { movie ->
                             movie.copy(genres = Cache.genres.filter { movie.genreIds?.contains(it.id) == true })
                         }
+
+                        resourceLiveDataSource.postValue(Resource.success())
                         callback.onResult(moviesWithGenres, page - 1)
                     } ?: run {
-                        //TODO LISTA NULL
+                        resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
+                        callback.onResult(mutableListOf(), page - 1)
                     }
                 } else {
-//                    val error = ErrorUtils.parseError(response)
-//
-//                    error?.message?.let {  message ->
-//                        mUpcomingMovies.value = Resource.error(message, null)
-//                    } ?: run {
-//                        mUpcomingMovies.value = Resource.error(ERROR_DEFAULT, null)
-//                    }
+                    val error = ErrorUtils.parseError(response)
+
+                    error?.message?.let {  message ->
+                        resourceLiveDataSource.postValue(Resource.error(message))
+                    } ?: run {
+                        resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
+                    }
+
+                    callback.onResult(mutableListOf(), page - 1)
                 }
             }
         })
