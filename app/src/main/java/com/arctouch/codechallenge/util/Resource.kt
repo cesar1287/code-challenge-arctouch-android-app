@@ -1,18 +1,18 @@
 package com.arctouch.codechallenge.util
 
-data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
+data class Resource(val status: Status, val message: String?) {
 
     companion object {
-        fun <T> success(data: T?): Resource<T> {
-            return Resource(Status.SUCCESS, data, null)
+        fun error(msg: String): Resource {
+            return Resource(Status.ERROR, msg)
         }
 
-        fun <T> error(msg: String, data: T?): Resource<T> {
-            return Resource(Status.ERROR, data, msg)
+        fun loading(): Resource {
+            return Resource(Status.LOADING, null)
         }
 
-        fun <T> loading(data: T?): Resource<T> {
-            return Resource(Status.LOADING, data, null)
+        fun success(): Resource {
+            return Resource(Status.SUCCESS, null)
         }
     }
 }

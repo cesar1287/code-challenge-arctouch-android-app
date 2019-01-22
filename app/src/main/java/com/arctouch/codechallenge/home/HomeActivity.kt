@@ -5,7 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import com.arctouch.codechallenge.R
+import com.arctouch.codechallenge.util.Status
 import com.arctouch.codechallenge.viewmodel.UpcomingMoviesViewModel
 import kotlinx.android.synthetic.main.home_activity.*
 
@@ -27,8 +29,24 @@ class HomeActivity : AppCompatActivity() {
 
     private fun loadContent() {
         val viewModel = ViewModelProviders.of(this).get(UpcomingMoviesViewModel::class.java)
-        viewModel.itemPagedList?.observe(this, Observer { pagedList ->
+        viewModel.moviePagedList?.observe(this, Observer { pagedList ->
             homeAdapter?.submitList(pagedList)
+        })
+
+        viewModel.resourceLiveDataSource?.observe(this, Observer { resource ->
+            when (resource?.status) {
+                Status.LOADING -> {
+                    setVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE)
+                }
+                Status.ERROR -> {
+                    errorMessage.text = resource.message
+
+                    setVisibility(View.GONE, View.GONE, View.GONE, View.VISIBLE)
+                }
+                Status.SUCCESS -> {
+                    setVisibility(View.GONE, View.VISIBLE, View.GONE, View.GONE)
+                }
+            }
         })
     }
 
