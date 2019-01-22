@@ -12,31 +12,31 @@ import retrofit2.Response
 
 class UpcomingMoviesRepository {
 
-    fun loadUpcomingMovies(): LiveData<Resource<UpcomingMoviesResponse>> {
+    fun loadUpcomingMovies(page: Long): LiveData<Resource<UpcomingMoviesResponse>> {
         val mUpcomingMovies: MutableLiveData<Resource<UpcomingMoviesResponse>> = MutableLiveData()
-        mUpcomingMovies.value = Resource.loading(null)
+        mUpcomingMovies.postValue(Resource.loading(null))
 
         ApiService.getTmdbApiClient().create(TmdbApi::class.java).upcomingMovies(
                 API_KEY,
                 DEFAULT_LANGUAGE,
-                1,
+                page,
                 DEFAULT_REGION
         ).enqueue(object : Callback<UpcomingMoviesResponse> {
             override fun onFailure(call: Call<UpcomingMoviesResponse>, t: Throwable) {
-                mUpcomingMovies.value = Resource.error(t.localizedMessage, null)
+                mUpcomingMovies.postValue(Resource.error(t.localizedMessage, null))
             }
 
             override fun onResponse(call: Call<UpcomingMoviesResponse>, response: Response<UpcomingMoviesResponse>) {
                 if (response.isSuccessful) {
                     val upcomingMoviesList = response.body()
-                    mUpcomingMovies.value = Resource.success(upcomingMoviesList)
+                    mUpcomingMovies.postValue(Resource.success(upcomingMoviesList))
                 } else {
                     val error = ErrorUtils.parseError(response)
 
                     error?.message?.let {  message ->
-                        mUpcomingMovies.value = Resource.error(message, null)
+                        mUpcomingMovies.postValue(Resource.error(message, null))
                     } ?: run {
-                        mUpcomingMovies.value = Resource.error(ERROR_DEFAULT, null)
+                        mUpcomingMovies.postValue(Resource.error(ERROR_DEFAULT, null))
                     }
                 }
             }
