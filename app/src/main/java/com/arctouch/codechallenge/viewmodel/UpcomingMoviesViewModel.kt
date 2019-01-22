@@ -3,19 +3,33 @@ package com.arctouch.codechallenge.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
-import com.arctouch.codechallenge.model.UpcomingMoviesResponse
-import com.arctouch.codechallenge.repository.UpcomingMoviesRepository
-import com.arctouch.codechallenge.util.Resource
+import android.arch.paging.PageKeyedDataSource
+import android.arch.paging.PagedList
+import com.arctouch.codechallenge.model.Movie
+import android.arch.paging.LivePagedListBuilder
+import com.arctouch.codechallenge.paging.UpcomingMoviesDataSourceFactory
+import com.arctouch.codechallenge.util.PAGE_SIZE
 
 class UpcomingMoviesViewModel(application: Application): AndroidViewModel(application) {
 
-    private var upcomingMoviesRepository: UpcomingMoviesRepository? = null
+    //creating livedata for PagedList  and PagedKeyedDataSource
+    var itemPagedList: LiveData<PagedList<Movie>>? = null
+    var liveDataSource: LiveData<PageKeyedDataSource<Long, Movie>>? = null
 
     init {
-        upcomingMoviesRepository = UpcomingMoviesRepository()
-    }
+        //getting our data source factory
+        val itemDataSourceFactory = UpcomingMoviesDataSourceFactory()
 
-    fun getUpcomingMovies(): LiveData<Resource<UpcomingMoviesResponse>>? {
-        return upcomingMoviesRepository?.loadUpcomingMovies()
+        //getting the live data source from data source factory
+        liveDataSource = itemDataSourceFactory.getItemLiveDataSource()
+
+        //Getting PagedList config
+        val pagedListConfig = PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPageSize(PAGE_SIZE).build()
+
+        //Building the paged list
+        itemPagedList = LivePagedListBuilder(itemDataSourceFactory, pagedListConfig)
+                .build()
     }
 }
