@@ -5,4 +5,5 @@
     <string name="label_no_content">No Data</string>
     <string name="label_retry">Try Again</string>
     <string name="overview">overview</string>
+    <string name="genres">Genres</string>
 </resources>

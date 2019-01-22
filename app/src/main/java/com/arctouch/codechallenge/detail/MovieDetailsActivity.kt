@@ -11,6 +11,7 @@ import com.arctouch.codechallenge.util.GlideApp
 import com.arctouch.codechallenge.util.KEY_EXTRA_MOVIE
 import com.arctouch.codechallenge.util.MovieImageUrlBuilder
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.android.synthetic.main.activity_movie_details.*
 
 class MovieDetailsActivity : AppCompatActivity() {
 
@@ -24,6 +25,8 @@ class MovieDetailsActivity : AppCompatActivity() {
         val movie: Movie = intent.getParcelableExtra(KEY_EXTRA_MOVIE)
         val binding : ActivityMovieDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details)
         binding.movie = movie
+
+        genres.text = movie.genres?.joinToString(separator = ", ") { it.name }
 
         GlideApp.with(this)
                 .load(movie.backdropPath?.let { movieImageUrlBuilder.buildBackdropUrl(it) })

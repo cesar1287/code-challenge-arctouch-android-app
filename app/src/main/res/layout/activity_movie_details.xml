@@ -107,6 +107,26 @@
                                 android:layout_height="wrap_content"
                                 tools:text="@{movie.overview}" />
                         </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/genres_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_below="@id/overview_container">
+
+                            <android.support.v7.widget.AppCompatTextView
+                                style="@style/HeaderTextView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/genres" />
+
+                            <android.support.v7.widget.AppCompatTextView
+                                android:id="@+id/genres"
+                                style="@style/DetailField"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
                     </RelativeLayout>
                 </android.support.v7.widget.CardView>
             </FrameLayout>

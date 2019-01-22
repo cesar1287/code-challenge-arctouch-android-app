@@ -4,6 +4,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.paging.PageKeyedDataSource
 import com.arctouch.codechallenge.api.ApiService
 import com.arctouch.codechallenge.api.callbacks.TmdbApi
+import com.arctouch.codechallenge.data.Cache
+import com.arctouch.codechallenge.model.GenreResponse
 import com.arctouch.codechallenge.model.Movie
 import com.arctouch.codechallenge.model.UpcomingMoviesResponse
 import com.arctouch.codechallenge.util.*
@@ -16,36 +18,58 @@ class UpcomingMoviesPageKeyedDataSource(var resourceLiveDataSource: MutableLiveD
     override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<Long, Movie>) {
         resourceLiveDataSource.postValue(Resource.loading())
 
-        ApiService.getTmdbApiClient().create(TmdbApi::class.java).upcomingMovies(
+        ApiService.getTmdbApiClient().create(TmdbApi::class.java).genres(
                 API_KEY,
-                DEFAULT_LANGUAGE,
-                FIRST_PAGE,
-                DEFAULT_REGION
-        ).enqueue(object : Callback<UpcomingMoviesResponse> {
-            override fun onFailure(call: Call<UpcomingMoviesResponse>, t: Throwable) {
+                DEFAULT_LANGUAGE
+        ).enqueue(object : Callback<GenreResponse> {
+            override fun onFailure(call: Call<GenreResponse>, t: Throwable) {
                 resourceLiveDataSource.postValue(Resource.error(t.localizedMessage))
-                callback.onResult(mutableListOf(), null, FIRST_PAGE + 1)
             }
 
-            override fun onResponse(call: Call<UpcomingMoviesResponse>, response: Response<UpcomingMoviesResponse>) {
+            override fun onResponse(call: Call<GenreResponse>, response: Response<GenreResponse>) {
                 if (response.isSuccessful) {
-                    val moviesList = response.body()?.results
-                    moviesList?.let {
-                        resourceLiveDataSource.postValue(Resource.success())
-                        callback.onResult(moviesList, null, FIRST_PAGE + 1)
-                    } ?: run {
-                        resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
-                        callback.onResult(mutableListOf(), null, FIRST_PAGE + 1)
-                    }
-                } else {
-                    val error = ErrorUtils.parseError(response)
+                    Cache.cacheGenres(response.body()!!.genres)
 
-                    error?.message?.let {  message ->
-                        resourceLiveDataSource.postValue(Resource.error(message))
-                    } ?: run {
-                        resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
-                    }
-                    callback.onResult(mutableListOf(), null, FIRST_PAGE + 1)
+                    ApiService.getTmdbApiClient().create(TmdbApi::class.java).upcomingMovies(
+                            API_KEY,
+                            DEFAULT_LANGUAGE,
+                            FIRST_PAGE,
+                            DEFAULT_REGION
+                    ).enqueue(object : Callback<UpcomingMoviesResponse> {
+                        override fun onFailure(call: Call<UpcomingMoviesResponse>, t: Throwable) {
+                            resourceLiveDataSource.postValue(Resource.error(t.localizedMessage))
+                            callback.onResult(mutableListOf(), null, FIRST_PAGE + 1)
+                        }
+
+                        override fun onResponse(call: Call<UpcomingMoviesResponse>, response: Response<UpcomingMoviesResponse>) {
+                            if (response.isSuccessful) {
+                                val moviesList = response.body()?.results
+                                moviesList?.let { movies ->
+
+                                    val moviesWithGenres = movies.map { movie ->
+                                        movie.copy(genres = Cache.genres.filter { movie.genreIds?.contains(it.id) == true })
+                                    }
+
+                                    resourceLiveDataSource.postValue(Resource.success())
+                                    callback.onResult(moviesWithGenres, null, FIRST_PAGE + 1)
+                                } ?: run {
+                                    resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
+                                    callback.onResult(mutableListOf(), null, FIRST_PAGE + 1)
+                                }
+                            } else {
+                                val error = ErrorUtils.parseError(response)
+
+                                error?.message?.let {  message ->
+                                    resourceLiveDataSource.postValue(Resource.error(message))
+                                } ?: run {
+                                    resourceLiveDataSource.postValue(Resource.error(ERROR_DEFAULT))
+                                }
+                                callback.onResult(mutableListOf(), null, FIRST_PAGE + 1)
+                            }
+                        }
+                    })
+                } else {
+
                 }
             }
         })
@@ -67,8 +91,13 @@ class UpcomingMoviesPageKeyedDataSource(var resourceLiveDataSource: MutableLiveD
             override fun onResponse(call: Call<UpcomingMoviesResponse>, response: Response<UpcomingMoviesResponse>) {
                 if (response.isSuccessful) {
                     val moviesList = response.body()?.results
-                    moviesList?.let {
-                        callback.onResult(moviesList, page + 1)
+                    moviesList?.let { movies ->
+
+                        val moviesWithGenres = movies.map { movie ->
+                            movie.copy(genres = Cache.genres.filter { movie.genreIds?.contains(it.id) == true })
+                        }
+
+                        callback.onResult(moviesWithGenres, page + 1)
                     } ?: run {
                         //TODO LISTA NULL
                     }
@@ -101,8 +130,12 @@ class UpcomingMoviesPageKeyedDataSource(var resourceLiveDataSource: MutableLiveD
             override fun onResponse(call: Call<UpcomingMoviesResponse>, response: Response<UpcomingMoviesResponse>) {
                 if (response.isSuccessful) {
                     val moviesList = response.body()?.results
-                    moviesList?.let {
-                        callback.onResult(moviesList, page - 1)
+                    moviesList?.let { movies ->
+
+                        val moviesWithGenres = movies.map { movie ->
+                            movie.copy(genres = Cache.genres.filter { movie.genreIds?.contains(it.id) == true })
+                        }
+                        callback.onResult(moviesWithGenres, page - 1)
                     } ?: run {
                         //TODO LISTA NULL
                     }
