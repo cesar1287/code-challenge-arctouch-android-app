@@ -17,4 +17,7 @@
     <color name="red_500">#f44336</color>
 
     <color name="yellow">#ffeb3b</color>
+
+    <color name="darkPrimary">#512DA8</color>
+    <color name="primaryText">#212121</color>
 </resources>

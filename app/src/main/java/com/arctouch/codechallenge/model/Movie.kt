@@ -1,8 +1,11 @@
 package com.arctouch.codechallenge.model
 
+import android.os.Parcelable
 import android.support.v7.util.DiffUtil
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Movie(
     val id: Int,
     val title: String,
@@ -12,8 +15,7 @@ data class Movie(
     @SerializedName("poster_path") val posterPath: String?,
     @SerializedName("backdrop_path") val backdropPath: String?,
     @SerializedName("release_date") val releaseDate: String?
-) {
-
+) : Parcelable {
     companion object {
         // use for ordering the items in view
         var DIFF_CALLBACK: DiffUtil.ItemCallback<Movie> = object : DiffUtil.ItemCallback<Movie>() {

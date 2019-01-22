@@ -42,7 +42,7 @@ class HomeActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-        homeAdapter = HomeAdapter()
+        homeAdapter = HomeAdapter(this)
         recyclerView.adapter = homeAdapter
     }
 }
