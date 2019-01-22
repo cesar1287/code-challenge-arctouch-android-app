@@ -43,6 +43,7 @@ dependencies {
 
     //jetpack
     implementation "android.arch.lifecycle:extensions:${versions.lifecycle}"
+    implementation "android.arch.paging:runtime:${versions.paging}"
 
     //http
     implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"

@@ -1,5 +1,6 @@
 package com.arctouch.codechallenge.home
 
+import android.arch.paging.PagedListAdapter
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,7 @@ import com.arctouch.codechallenge.util.MovieImageUrlBuilder
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.movie_item.view.*
 
-class HomeAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
+class HomeAdapter(private val movies: List<Movie>) : PagedListAdapter<Movie, HomeAdapter.ViewHolder>(Movie.DIFF_CALLBACK) {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
