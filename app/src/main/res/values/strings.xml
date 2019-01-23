@@ -6,4 +6,6 @@
     <string name="label_retry">Try Again</string>
     <string name="overview">overview</string>
     <string name="genres">Genres</string>
+    <string name="search_hint">Find a movie</string>
+    <string name="app_label">Find</string>
 </resources>

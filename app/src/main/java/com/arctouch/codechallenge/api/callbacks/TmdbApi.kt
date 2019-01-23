@@ -24,6 +24,13 @@ interface TmdbApi {
         @Query("region") region: String
     ): Call<UpcomingMoviesResponse>
 
+    @GET("search/movie")
+    fun searchMovies(
+            @Query("api_key") apiKey: String,
+            @Query("query") query: String,
+            @Query("page") page: Long
+    ): Call<UpcomingMoviesResponse>
+
     @GET("movie/{id}")
     fun movie(
         @Path("id") id: Long,

@@ -10,3 +10,4 @@ const val ERROR_DEFAULT = "unknown error"
 const val PAGE_SIZE = 20
 const val FIRST_PAGE = 1L
 const val KEY_EXTRA_MOVIE = "movie"
+const val KEY_EXTRA_QUERY = "query"
