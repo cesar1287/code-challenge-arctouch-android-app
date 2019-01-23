@@ -15,7 +15,7 @@ class UpcomingMoviesViewModel(application: Application): AndroidViewModel(applic
 
     //creating livedata for PagedList  and PagedKeyedDataSource
     var moviePagedList: LiveData<PagedList<Movie>>? = null
-    var upcomingMoviesliveDataSource: LiveData<PageKeyedDataSource<Long, Movie>>? = null
+    private var upcomingMoviesliveDataSource: LiveData<PageKeyedDataSource<Long, Movie>>? = null
     var resourceLiveDataSource: LiveData<Resource>? = null
 
     init {
