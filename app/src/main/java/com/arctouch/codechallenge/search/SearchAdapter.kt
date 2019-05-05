@@ -1,4 +1,4 @@
-package com.arctouch.codechallenge.home
+package com.arctouch.codechallenge.search
 
 import android.arch.paging.PagedListAdapter
 import android.content.Context
@@ -16,7 +16,7 @@ import com.arctouch.codechallenge.util.MovieImageUrlBuilder
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.movie_item.view.*
 
-class HomeAdapter(private var context: Context) : PagedListAdapter<Movie, HomeAdapter.ViewHolder>(Movie.DIFF_CALLBACK) {
+class SearchAdapter(private var context: Context) : PagedListAdapter<Movie, SearchAdapter.ViewHolder>(Movie.DIFF_CALLBACK) {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
